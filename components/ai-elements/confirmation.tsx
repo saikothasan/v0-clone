@@ -39,10 +39,20 @@ type ToolUIPartApproval =
     }
   | undefined;
 
+// --- FIX START ---
+// We create a union type that includes the standard SDK states 
+// PLUS the approval states your code is checking for.
+type ExtendedToolState = 
+  | ToolUIPart["state"] 
+  | "approval-requested" 
+  | "approval-responded" 
+  | "output-denied";
+
 type ConfirmationContextValue = {
   approval: ToolUIPartApproval;
-  state: ToolUIPart["state"];
+  state: ExtendedToolState; // Updated type here
 };
+// --- FIX END ---
 
 const ConfirmationContext = createContext<ConfirmationContextValue | null>(
   null
@@ -60,7 +70,7 @@ const useConfirmation = () => {
 
 export type ConfirmationProps = ComponentProps<typeof Alert> & {
   approval?: ToolUIPartApproval;
-  state: ToolUIPart["state"];
+  state: ExtendedToolState; // Updated type here
 };
 
 export const Confirmation = ({
@@ -96,7 +106,7 @@ export type ConfirmationRequestProps = {
 export const ConfirmationRequest = ({ children }: ConfirmationRequestProps) => {
   const { state } = useConfirmation();
 
-  // Only show when approval is requested
+  // This comparison is now valid because state can be "approval-requested"
   if (state !== "approval-requested") {
     return null;
   }
