@@ -20,6 +20,15 @@ import type { ComponentProps, ReactNode } from "react";
 import { isValidElement } from "react";
 import { CodeBlock } from "./code-block";
 
+// --- FIX START ---
+// Define the extended state type locally to support approval states
+type ExtendedToolState =
+  | ToolUIPart["state"]
+  | "approval-requested"
+  | "approval-responded"
+  | "output-denied";
+// --- FIX END ---
+
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
@@ -32,12 +41,15 @@ export const Tool = ({ className, ...props }: ToolProps) => (
 export type ToolHeaderProps = {
   title?: string;
   type: ToolUIPart["type"];
-  state: ToolUIPart["state"];
+  state: ExtendedToolState; // Updated to use ExtendedToolState
   className?: string;
 };
 
-const getStatusBadge = (status: ToolUIPart["state"]) => {
-  const labels: Record<ToolUIPart["state"], string> = {
+// Updated argument type to ExtendedToolState
+const getStatusBadge = (status: ExtendedToolState) => {
+  
+  // Updated Record key type to ExtendedToolState
+  const labels: Record<ExtendedToolState, string> = {
     "input-streaming": "Pending",
     "input-available": "Running",
     "approval-requested": "Awaiting Approval",
@@ -47,7 +59,8 @@ const getStatusBadge = (status: ToolUIPart["state"]) => {
     "output-denied": "Denied",
   };
 
-  const icons: Record<ToolUIPart["state"], ReactNode> = {
+  // Updated Record key type to ExtendedToolState
+  const icons: Record<ExtendedToolState, ReactNode> = {
     "input-streaming": <CircleIcon className="size-4" />,
     "input-available": <ClockIcon className="size-4 animate-pulse" />,
     "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
